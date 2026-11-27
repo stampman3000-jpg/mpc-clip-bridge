@@ -1,0 +1,6 @@
+ADDIN_ID=clip-bridge
+ADDIN_NAME="MPC Clip Bridge"
+ADDIN_SO=mpc_clip_bridge.so
+ADDIN_CONF=
+ADDIN_FILES="mpc-clip-ctl"
+ADDIN_DONE="Run /data/mpc-addins/clip-bridge/mpc-clip-ctl hello over SSH to verify."
