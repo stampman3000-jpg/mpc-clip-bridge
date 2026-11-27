@@ -6,6 +6,12 @@ It exposes native multi-track clip read, surgical write, track metadata, and loo
 
 > **WARNING — EXPERIMENTAL / USE AT YOUR OWN RISK.** This is an unofficial addin for **MPC OS `3.10.1.12`**. It hooks internal functions inside `/usr/bin/MPC` via Developer Mode SSH. **Back up your projects and SD card** before installing. Not affiliated with or supported by Akai Professional / inMusic.
 
+## Demo
+
+[![TrackBoy reading and writing MPC clips via mpc-clip-bridge](https://img.youtube.com/vi/pJdCz3IE0R4/hqdefault.jpg)](https://youtu.be/pJdCz3IE0R4)
+
+40-second clip showing TrackBoy reading and writing MPC clips through the bridge.
+
 ## Safety
 
 The addin is designed to stay inert unless the running MPC binary is one it knows:

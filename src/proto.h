@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT
- * Minimal /run/mpc-ext.sock line protocol (v1) for native multi-track clip R/W.
+ * Minimal /run/mpc-ext.sock line protocol (v2) for native multi-track clip R/W.
  */
 #ifndef MPC_CLIP_BRIDGE_PROTO_H
 #define MPC_CLIP_BRIDGE_PROTO_H

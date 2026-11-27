@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT
- * mpc-clip-ctl: CLI test client for /run/mpc-ext.sock (v1).
+ * mpc-clip-ctl: CLI test client for /run/mpc-ext.sock (v2).
  *
  * Usage:
  *   mpc-clip-ctl hello

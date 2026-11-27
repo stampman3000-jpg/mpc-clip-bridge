@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT
- * Line-protocol parser and formatter for /run/mpc-ext.sock (v1).
+ * Line-protocol parser and formatter for /run/mpc-ext.sock (v2).
  */
 #include "proto.h"
 
