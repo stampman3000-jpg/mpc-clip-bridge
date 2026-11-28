@@ -26,7 +26,10 @@ This document compares `mpc-clip-bridge`'s previous custom `packaging/install.sh
 - **Canonical installer:**
   - Keeps `90-mpc-addins.conf` in `/etc` — or, on MPC OS 3.10.1 with Akai's read-only `user-access/etc-overlay` stacked over the writable `/etc` overlay, writes directly to the writable upper layer (`etc_stacked_upper()`) and refreshes the dentry cache (`etc_refresh()` -> `drop_caches=2`).
   - Solves the late `etc.mount` cold-boot race cleanly via `boot_reload_add`: writes `/usr/lib/systemd/system/mpc-addins-reload.service` (linked from `acvs.service.wants/`, `After=etc.mount`, `Before=acvs.service`, `ConditionDirectoryNotEmpty=/etc/systemd/system/acvs.service.d`, `ExecStart=-/bin/systemctl daemon-reload`) and removes it via `boot_reload_remove` when the last addin is uninstalled.
-- **Upgrade note for existing installs:** Users who previously ran our old custom `install.sh` (which placed `90-mpc-addins.conf` under `/usr/lib/systemd/system/acvs.service.d/`) should run their existing `/data/mpc-addins/clip-bridge/uninstall.sh` once before installing a `1.0.0+` catalogue release zip so no stale `/usr/lib` drop-in remains.
+- **Upgrade note for existing installs:** Users who previously ran our old custom `install.sh` (which placed `90-mpc-addins.conf` under `/usr/lib/systemd/system/acvs.service.d/`) must remove that stale rootfs drop-in before installing a `1.0.0+` catalogue release zip. Because the old custom `uninstall.sh` hit BusyBox's `[ -w ]` bug on read-only `/`, remove it directly over SSH first:
+  ```sh
+  mount -o remount,rw / && rm -f /usr/lib/systemd/system/acvs.service.d/90-mpc-addins.conf && rmdir /usr/lib/systemd/system/acvs.service.d 2>/dev/null || true; sync; mount -o remount,ro /
+  ```
 
 ### 3. Gen 2 `dm-verity` / Read-Only Rootfs
 - **Previous custom scripts:**
