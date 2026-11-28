@@ -1,0 +1,10 @@
+[
+  {
+    "id": "clip-bridge",
+    "version": "1.0.0",
+    "device": "MPC One",
+    "firmware": "3.10.1.12",
+    "date": "2026-11-28",
+    "notes": "Gen1 only. Firmware build 3.10.1.12, Build ID 851d050eb03ce0b8663aaa572b2599813cbf53d4. Asset MPC-Clip-Bridge-1.0.0-mpc-armv7.zip sha256 535432e62375d4e28265bd66f3d60daef5c49f2d6a609c149bcaeb73e07291d4. Tested by Stampman3000: install, uninstall, and Trackboy native clip read/write working. Not tested on aarch64/Gen2."
+  }
+]

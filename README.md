@@ -60,7 +60,7 @@ cc -std=gnu11 -O2 -Wall -Wextra -Werror -o /tmp/test_profiles test/test_profiles
 
 ## Install
 
-Release zips follow the [open-mpc](https://github.com/open-mpc/mpc-vst-plugins) catalogue addin layout (`MPC-Clip-Bridge-<ver>-mpc-armv7.zip` for Gen 1, `MPC-Clip-Bridge-<ver>-mpc-aarch64.zip` for Gen 2) and use the canonical `open-mpc` addin installer (`install.sh`, `uninstall.sh`, `addin-lib.sh`; see [docs/INSTALL-DIFF.md](docs/INSTALL-DIFF.md)).
+Release zips follow the [open-mpc](https://github.com/open-mpc/mpc-vst-plugins) catalogue addin layout (`MPC-Clip-Bridge-<ver>-mpc-armv7.zip` for Gen 1, `MPC-Clip-Bridge-<ver>-mpc-aarch64.zip` for Gen 2) and use the canonical `open-mpc` addin installer (`install.sh`, `uninstall.sh`, `addin-lib.sh`; see [docs/INSTALL-DIFF.md](docs/INSTALL-DIFF.md)). When packaging a new version, copy `LICENSE` into the `release_addin.py --dir` folder with `addin.manifest`, the `.so` and `mpc-clip-ctl` so the zip folder carries the MIT licence text. Do not replace a published release zip.
 
 Requires Developer Mode SSH on the MPC:
 
@@ -68,7 +68,7 @@ Requires Developer Mode SSH on the MPC:
    ```sh
    scp -r MPC-Clip-Bridge-1.0.0 root@<mpc-ip>:/tmp/
    ```
-   *(If installing directly from a local build instead of a release zip, copy `build/mpc_clip_bridge.so` + `build/mpc-clip-ctl` (or `build/aarch64/...` on Gen 2) alongside `packaging/addin.manifest`, `packaging/install.sh`, `packaging/uninstall.sh`, and `packaging/addin-lib.sh`.)*
+   *(If installing directly from a local build instead of a release zip, copy `build/mpc_clip_bridge.so` + `build/mpc-clip-ctl` (or `build/aarch64/...` on Gen 2) and `LICENSE` alongside `packaging/addin.manifest`, `packaging/install.sh`, `packaging/uninstall.sh`, and `packaging/addin-lib.sh`. `LICENSE` is in `ADDIN_FILES` so it is installed next to the binary and is included in the next release zip; the published 1.0.0 zips are left unchanged.)*
 2. Install on the MPC (chains into the shared `90-mpc-addins.conf` drop-in and offers to restart `acvs`):
    ```sh
    ssh -t root@<mpc-ip> "sh /tmp/MPC-Clip-Bridge-1.0.0/install.sh"
