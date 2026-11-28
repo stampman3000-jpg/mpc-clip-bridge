@@ -60,17 +60,18 @@ cc -std=gnu11 -O2 -Wall -Wextra -Werror -o /tmp/test_profiles test/test_profiles
 
 ## Install
 
-Requires Developer Mode SSH on the MPC, plus the matching `.so` for that machine (`build/mpc_clip_bridge.so` on Gen 1, `build/aarch64/mpc_clip_bridge.so` on Gen 2).
+Release zips follow the [open-mpc](https://github.com/open-mpc/mpc-vst-plugins) catalogue addin layout (`MPC-Clip-Bridge-<ver>-mpc-armv7.zip` for Gen 1, `MPC-Clip-Bridge-<ver>-mpc-aarch64.zip` for Gen 2) and use the canonical `open-mpc` addin installer (`install.sh`, `uninstall.sh`, `addin-lib.sh`; see [docs/INSTALL-DIFF.md](docs/INSTALL-DIFF.md)).
 
-1. Copy the library, CLI, and packaging scripts to `/tmp/cb` on the MPC:
+Requires Developer Mode SSH on the MPC:
+
+1. Unzip the release for your device and copy the folder to `/tmp/` on the MPC:
    ```sh
-   ssh root@<mpc-ip> "mkdir -p /tmp/cb"
-   scp build/mpc_clip_bridge.so build/mpc-clip-ctl packaging/addin.manifest packaging/install.sh packaging/uninstall.sh root@<mpc-ip>:/tmp/cb/
+   scp -r MPC-Clip-Bridge-1.0.0 root@<mpc-ip>:/tmp/
    ```
-   On Gen 2, copy `build/aarch64/mpc_clip_bridge.so` (and the matching `mpc-clip-ctl`) instead of the Gen 1 `build/` copies.
-2. Install on the MPC (chains into the open-mpc `90-mpc-addins.conf` drop-in and offers to restart `acvs`):
+   *(If installing directly from a local build instead of a release zip, copy `build/mpc_clip_bridge.so` + `build/mpc-clip-ctl` (or `build/aarch64/...` on Gen 2) alongside `packaging/addin.manifest`, `packaging/install.sh`, `packaging/uninstall.sh`, and `packaging/addin-lib.sh`.)*
+2. Install on the MPC (chains into the shared `90-mpc-addins.conf` drop-in and offers to restart `acvs`):
    ```sh
-   ssh -t root@<mpc-ip> "sh /tmp/cb/install.sh"
+   ssh -t root@<mpc-ip> "sh /tmp/MPC-Clip-Bridge-1.0.0/install.sh"
    ```
 3. Verify live:
    ```sh

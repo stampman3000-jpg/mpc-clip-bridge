@@ -1,71 +1,39 @@
 #!/bin/sh
-# SPDX-License-Identifier: MIT
-# Cleanly uninstall mpc_clip_bridge.so without disturbing other open-mpc addins.
-set -eu
-
-dest="/data/mpc-addins/clip-bridge"
-so="$dest/mpc_clip_bridge.so"
-auto=0
-norestart=0
-for arg in "$@"; do
-    case "$arg" in
-        -y) auto=1 ;;
-        -n) norestart=1 ;;
+# Remove an MPC addin (the one addin.manifest describes): take its .so out of LD_PRELOAD (other addins stay),
+# restart MPC, delete the files it installed, its settings file included, and its folder once that is empty.
+#   sh uninstall.sh [-y] [-n] [-t <folder>]   (the folder must be named after the addin: .../<id>)
+# The installed folder holds a copy of this script: `sh /data/mpc-addins/<id>/uninstall.sh` works without the release.
+# mpc-vst-plugins tools/release/addin: identical in every addin release (docs/ADDINS.md).
+set -e
+cd "$(dirname "$0")"
+YES=0; RESTART=1; DIR=""; DEFER=1
+die() { echo "error: $*" >&2; exit 1; }
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -y) YES=1; shift ;;
+        -n) RESTART=0; shift ;;
+        -t) [ -n "$2" ] || die "-t needs a folder"; DIR="$2"; shift 2 ;;
+        *) die "usage: sh uninstall.sh [-y] [-n] [-t <folder>]" ;;
     esac
 done
-
-svc="acvs"
-systemctl cat inmusic-mpc >/dev/null 2>&1 && ! systemctl cat acvs >/dev/null 2>&1 && svc="inmusic-mpc"
-
-remounted_ro=0
-cleanup_rootfs() {
-    if [ "$remounted_ro" = 1 ]; then
-        sync
-        mount -o remount,ro / 2>/dev/null || true
-        remounted_ro=0
-    fi
-}
-trap cleanup_rootfs EXIT
-
-for root in /usr/lib/systemd/system /etc/systemd/system /data/system/etc/overlay/systemd/system /run/systemd/system; do
-    f="$root/$svc.service.d/90-mpc-addins.conf"
-    [ -f "$f" ] || continue
-    if grep -qF "$so" "$f"; then
-        if [ "$root" = "/usr/lib/systemd/system" ] && ! [ -w "$f" ]; then
-            if mount -o remount,rw / 2>/dev/null; then
-                remounted_ro=1
-            fi
-        fi
-        sed -i "s|:$so||g; s|$so:||g; s|$so||g" "$f"
-        # If LD_PRELOAD is now empty, remove the drop-in
-        if grep -qE '^Environment=("?LD_PRELOAD="?)?$' "$f"; then
-            rm -f "$f"
-            rmdir "$root/$svc.service.d" 2>/dev/null || true
-        fi
-        if [ "$root" = "/usr/lib/systemd/system" ]; then
-            cleanup_rootfs
-        elif [ "$root" = "/data/system/etc/overlay/systemd/system" ]; then
-            sync
-            echo 2 > /proc/sys/vm/drop_caches 2>/dev/null || true
-        fi
-    fi
-done
-
-rm -rf "$dest"
-rm -f /run/mpc-ext.sock
-systemctl daemon-reload
-sync
-echo "Removed clip-bridge."
-
-if [ "$norestart" = 0 ]; then
-    ok="n"
-    if [ "$auto" = 1 ]; then
-        ok="y"
-    else
-        printf "Restart %s now? Unsaved project changes will be lost. [y/N] " "$svc"
-        read -r ok || ok="n"
-    fi
-    case "$ok" in
-        y|Y|yes) systemctl restart "$svc" ;;
-    esac
+. ./addin-lib.sh
+load_manifest
+check_dir
+SO="$DIR/$ADDIN_SO"
+[ -n "$ADDIN_INSTALL_TEST" ] || [ "$(id -u)" = 0 ] || die "run as root"
+SVC=$(mpc_service)
+resolve_dropin_root "$SVC"
+check_lib "$SVC"
+if [ $YES = 0 ]; then
+    printf "Remove %s%s? [y/N] " "$ADDIN_NAME" "$([ $RESTART = 1 ] && echo ' and restart MPC')"; read -r ok
+    case "$ok" in y|Y|yes) ;; *) echo "cancelled"; exit 1 ;; esac
 fi
+preload_remove "$SVC" "$SO"
+boot_reload_remove "$SVC"
+launcher_remove "$SO"
+mockba_hook_remove "$SO"
+svc daemon-reload
+if [ $RESTART = 1 ]; then svc restart "$SVC"; fi
+remove_files   # after the restart: MPC no longer has the .so mapped (with -n it stays mapped until MPC restarts)
+sync
+echo "Removed $ADDIN_NAME."
