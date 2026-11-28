@@ -1,3 +1,5 @@
+Global rules: also follow ~/agents/AGENTS.md (Johnny's shared rules for all agents).
+
 # AGENTS.md: mpc-clip-bridge
 
 LD_PRELOAD addin for MPC OS 3.10.1.12 (Gen 1 armhf and Gen 2 aarch64) that serves `/run/mpc-ext.sock`, giving native multi-track Clip Matrix read/write. TrackBoy is the first client plugin. Plus `mpc-clip-ctl` CLI for testing.
